@@ -1,0 +1,71 @@
+{% extends "backoffice/backoffice_base.html" %}
+{% load static %}
+
+{% block dashboard_app %}
+<div class="container mt-4">
+    <h2 class="h4">Fornitori</h2>
+
+    <!-- Form per creare un nuovo fornitore -->
+    <div class="mb-4">
+        <button class="btn bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#createSupplierForm" aria-expanded="false" aria-controls="createSupplierForm">
+            Aggiungi Fornitore
+        </button>
+        <div class="collapse mt-3" id="createSupplierForm">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ supplier_form.as_p }}
+                        <button type="submit" name="create_supplier" class="btn bg-dark text-white">Crea Fornitore</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista dei fornitori -->
+    <div class="mt-4">
+        <h3 class="h5">Lista Fornitori</h3>
+        <ul class="list-group">
+            {% for supplier in suppliers %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>{{ supplier.name }} - {{ supplier.company.name }}</span>
+                        <div>
+                            <!-- Form per eliminare un fornitore -->
+                            <form method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="supplier_id" value="{{ supplier.id }}">
+                                <button type="submit" name="delete_supplier" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+
+                            <!-- Pulsante per mostrare il form di modifica -->
+                            <button class="btn bg-dark text-white btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#updateForm-{{ supplier.id }}" aria-expanded="false" aria-controls="updateForm-{{ supplier.id }}">
+                                Modifica
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Form per aggiornare un fornitore -->
+                    <div class="collapse mt-3" id="updateForm-{{ supplier.id }}">
+                        <div class="card">
+                            <div class="card-body">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    {{ supplier_form.as_p }}
+                                    <input type="hidden" name="supplier_id" value="{{ supplier.id }}">
+                                    <button type="submit" name="update_supplier" class="btn bg-dark text-white">Salva Modifiche</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {% empty %}
+                <li class="list-group-item">Nessun fornitore disponibile.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock dashboard_app %}

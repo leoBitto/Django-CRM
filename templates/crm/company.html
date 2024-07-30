@@ -1,0 +1,71 @@
+{% extends "backoffice/backoffice_base.html" %}
+{% load static %}
+
+{% block dashboard_app %}
+<div class="container mt-4">
+    <h2 class="h4">Aziende</h2>
+
+    <!-- Form per creare una nuova azienda -->
+    <div class="mb-4">
+        <button class="btn bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#createCompanyForm" aria-expanded="false" aria-controls="createCompanyForm">
+            Aggiungi Azienda
+        </button>
+        <div class="collapse mt-3" id="createCompanyForm">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ company_form.as_p }}
+                        <button type="submit" name="create_company" class="btn bg-dark text-white">Crea Azienda</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista delle aziende -->
+    <div class="mt-4">
+        <h3 class="h5">Lista Aziende</h3>
+        <ul class="list-group">
+            {% for company in companies %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>{{ company.name }} - {{ company.address }}</span>
+                        <div>
+                            <!-- Form per eliminare un'azienda -->
+                            <form method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="company_id" value="{{ company.id }}">
+                                <button type="submit" name="delete_company" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+
+                            <!-- Pulsante per mostrare il form di modifica -->
+                            <button class="btn bg-dark text-white btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#updateForm-{{ company.id }}" aria-expanded="false" aria-controls="updateForm-{{ company.id }}">
+                                Modifica
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Form per aggiornare un'azienda -->
+                    <div class="collapse mt-3" id="updateForm-{{ company.id }}">
+                        <div class="card">
+                            <div class="card-body">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    {{ company_form.as_p }}
+                                    <input type="hidden" name="company_id" value="{{ company.id }}">
+                                    <button type="submit" name="update_company" class="btn bg-dark text-white">Salva Modifiche</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {% empty %}
+                <li class="list-group-item">Nessuna azienda disponibile.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock dashboard_app %}

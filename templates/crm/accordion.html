@@ -1,0 +1,25 @@
+<li class="nav-item">
+    <a class="nav-link d-flex align-items-center collapsed bg-dark text-white" data-bs-toggle="collapse" href="#crmAccordion" role="button" aria-expanded="true" aria-controls="crmAccordion">
+        <i class="fa fa-users me-2"></i> <span class="ms-1">CRM</span>
+    </a>
+    <div class="collapse" id="crmAccordion">
+        <ul class="nav flex-column ms-3">
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center text-black" href="{% url 'crm:company_view' %}">
+                    <i class="fas fa-building me-2"></i> Aziende
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center text-black" href="{% url 'crm:supplier_view' %}">
+                    <i class="fas fa-truck me-2"></i> Fornitori
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center text-black" href="{% url 'crm:customer_view' %}">
+                    <i class="fas fa-user me-2"></i> Clienti
+                </a>
+            </li>
+            <!-- Aggiungi altri link per le pagine di crm se necessario -->
+        </ul>
+    </div>
+</li>
