@@ -37,7 +37,7 @@
             {% for company in companies %}
                 <li class="list-group-item company-item">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span>{{ company.name }} - {{ company.address }}</span>
+                        <span>{{ company.name }} - {{ company.address }} - {{ company.type }}</span>
                         <div>
                             <!-- Form per eliminare un'azienda -->
                             <form method="post" style="display:inline;">
