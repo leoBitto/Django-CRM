@@ -3,13 +3,16 @@
 
 {% block dashboard_app %}
 <div class="container mt-4">
-    <h2 class="h4">Fornitori</h2>
-
-    <!-- Form per creare un nuovo fornitore -->
-    <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="h4">Fornitori</h2>
         <button class="btn bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#createSupplierForm" aria-expanded="false" aria-controls="createSupplierForm">
             Aggiungi Fornitore
         </button>
+    </div>
+
+    <!-- Form per creare un nuovo fornitore -->
+    <div class="mb-4">
+
         <div class="collapse mt-3" id="createSupplierForm">
             <div class="card">
                 <div class="card-body">
