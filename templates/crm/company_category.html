@@ -45,8 +45,8 @@
                 {% for category in categories %}
                     <tr class="category-item">
                         <td>{{ category.name }}</td>
-                        <td>{{ category.description }}</td>
-                        <td>
+                        <td class="col-md-7">{{ category.description }}</td>
+                        <td class="col-md-3">
                             <!-- Form per eliminare una categoria -->
                             <form method="post" style="display:inline;">
                                 {% csrf_token %}

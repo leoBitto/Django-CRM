@@ -39,7 +39,7 @@ class Supplier(models.Model):
     name = models.CharField(_("nome"), max_length=100, db_index=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='suppliers', verbose_name=_("azienda"))
     email = models.EmailField(_("email"))
-    phone = models.CharField(_("telefono"), max_length=20)
+    phone = models.CharField(_("telefono"), max_length=25)
     notes = models.TextField(_("note"), blank=True)
 
     class Meta:
