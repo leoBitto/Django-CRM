@@ -17,7 +17,7 @@
                 <div class="card-body">
                     <form method="post">
                         {% csrf_token %}
-                        {{ company_form.as_p }}
+                        {{ create_form.as_p }}
                         <button type="submit" name="create_company" class="btn bg-dark text-white">Crea Azienda</button>
                     </form>
                 </div>
@@ -30,49 +30,64 @@
         <input type="text" id="searchInput" class="form-control" placeholder="Cerca azienda...">
     </div>
 
-    <!-- Lista delle aziende -->
+    <!-- Tabella delle aziende -->
     <div class="mt-4">
         <h3 class="h5">Lista Aziende</h3>
-        <ul class="list-group" id="companyList">
-            {% for company in companies %}
-                <li class="list-group-item company-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span>{{ company.name }} - {{ company.address }} - {{ company.type }}</span>
-                        <div>
+        <table id="companyTable" class="table table-bordered w-100">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Indirizzo</th>
+                    <th>Tipo</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for info in company_info %}
+                    <tr class="company-item">
+                        <td>{{ info.company.name }}</td>
+                        <td>{{ info.company.address }}</td>
+                        <td>{{ info.company.type }}</td>
+                        <td>
                             <!-- Form per eliminare un'azienda -->
                             <form method="post" style="display:inline;">
                                 {% csrf_token %}
-                                <input type="hidden" name="company_id" value="{{ company.id }}">
+                                <input type="hidden" name="company_id" value="{{ info.company.id }}">
                                 <button type="submit" name="delete_company" class="btn btn-danger btn-sm">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
 
                             <!-- Pulsante per mostrare il form di modifica -->
-                            <button class="btn bg-dark text-white btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#updateForm-{{ company.id }}" aria-expanded="false" aria-controls="updateForm-{{ company.id }}">
+                            <button class="btn bg-dark text-white btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#updateForm-{{ info.company.id }}" aria-expanded="false" aria-controls="updateForm-{{ info.company.id }}">
                                 Modifica
                             </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Form per aggiornare un'azienda -->
-                    <div class="collapse mt-3" id="updateForm-{{ company.id }}">
-                        <div class="card">
-                            <div class="card-body">
-                                <form method="post">
-                                    {% csrf_token %}
-                                    {{ company_form.as_p }}
-                                    <input type="hidden" name="company_id" value="{{ company.id }}">
-                                    <button type="submit" name="update_company" class="btn bg-dark text-white">Salva Modifiche</button>
-                                </form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <!-- Form per aggiornare un'azienda -->
+                            <div class="collapse mt-3" id="updateForm-{{ info.company.id }}">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            {{ info.form.as_p }}
+                                            <input type="hidden" name="company_id" value="{{ info.company.id }}">
+                                            <button type="submit" name="update_company" class="btn bg-dark text-white">Salva Modifiche</button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </li>
-            {% empty %}
-                <li class="list-group-item">Nessuna azienda disponibile.</li>
-            {% endfor %}
-        </ul>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">Nessuna azienda disponibile.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -81,9 +96,9 @@
     $(document).ready(function () {
         $('#searchInput').on('keyup', function () {
             var query = $(this).val().toLowerCase();
-            $('.company-item').each(function () {
-                var companyName = $(this).find('span').text().toLowerCase(); // Nome e indirizzo dell'azienda
-                if (companyName.includes(query)) {
+            $('#companyTable tbody tr').each(function () {
+                var companyText = $(this).find('td').not(':last').text().toLowerCase(); // Nome, indirizzo e tipo dell'azienda
+                if (companyText.includes(query)) {
                     $(this).show();
                 } else {
                     $(this).hide();

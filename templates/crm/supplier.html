@@ -17,7 +17,7 @@
                 <div class="card-body">
                     <form method="post">
                         {% csrf_token %}
-                        {{ supplier_form.as_p }}
+                        {{ create_form.as_p }}
                         <button type="submit" name="create_supplier" class="btn bg-dark text-white">Crea Fornitore</button>
                     </form>
                 </div>
@@ -30,49 +30,66 @@
         <input type="text" id="searchInput" class="form-control" placeholder="Cerca fornitore...">
     </div>
 
-    <!-- Lista dei fornitori -->
+    <!-- Tabella dei fornitori -->
     <div class="mt-4">
         <h3 class="h5">Lista Fornitori</h3>
-        <ul class="list-group" id="supplierList">
-            {% for supplier in suppliers %}
-                <li class="list-group-item supplier-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span>{{ supplier.name }} - {{ supplier.company.name }}</span>
-                        <div>
+        <table id="supplierTable" class="table table-bordered w-100">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Azienda</th>
+                    <th>Mail</th>
+                    <th>Telefono</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for info in supplier_info %}
+                    <tr class="supplier-item">
+                        <td>{{ info.supplier.name }}</td>
+                        <td>{{ info.supplier.company.name }}</td>
+                        <td>{{ info.supplier.email }}</td>
+                        <td>{{ info.supplier.phone }}</td>
+                        <td>
                             <!-- Form per eliminare un fornitore -->
                             <form method="post" style="display:inline;">
                                 {% csrf_token %}
-                                <input type="hidden" name="supplier_id" value="{{ supplier.id }}">
+                                <input type="hidden" name="supplier_id" value="{{ info.supplier.id }}">
                                 <button type="submit" name="delete_supplier" class="btn btn-danger btn-sm">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
 
                             <!-- Pulsante per mostrare il form di modifica -->
-                            <button class="btn bg-dark text-white btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#updateForm-{{ supplier.id }}" aria-expanded="false" aria-controls="updateForm-{{ supplier.id }}">
+                            <button class="btn bg-dark text-white btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#updateForm-{{ info.supplier.id }}" aria-expanded="false" aria-controls="updateForm-{{ info.supplier.id }}">
                                 Modifica
                             </button>
-                        </div>
-                    </div>
-
-                    <!-- Form per aggiornare un fornitore -->
-                    <div class="collapse mt-3" id="updateForm-{{ supplier.id }}">
-                        <div class="card">
-                            <div class="card-body">
-                                <form method="post">
-                                    {% csrf_token %}
-                                    {{ supplier_form.as_p }}
-                                    <input type="hidden" name="supplier_id" value="{{ supplier.id }}">
-                                    <button type="submit" name="update_supplier" class="btn bg-dark text-white">Salva Modifiche</button>
-                                </form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <!-- Form per aggiornare un fornitore -->
+                            <div class="collapse mt-3" id="updateForm-{{ info.supplier.id }}">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            {{ info.form.as_p }}
+                                            <input type="hidden" name="supplier_id" value="{{ info.supplier.id }}">
+                                            <button type="submit" name="update_supplier" class="btn bg-dark text-white">Salva Modifiche</button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </li>
-            {% empty %}
-                <li class="list-group-item">Nessun fornitore disponibile.</li>
-            {% endfor %}
-        </ul>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3">Nessun fornitore disponibile.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -81,8 +98,8 @@
     $(document).ready(function () {
         $('#searchInput').on('keyup', function () {
             var query = $(this).val().toLowerCase();
-            $('.supplier-item').each(function () {
-                var supplierText = $(this).find('span').text().toLowerCase(); // Nome e azienda del fornitore
+            $('#supplierTable tbody tr').each(function () {
+                var supplierText = $(this).find('td').not(':last').text().toLowerCase(); // Nome e azienda del fornitore
                 if (supplierText.includes(query)) {
                     $(this).show();
                 } else {

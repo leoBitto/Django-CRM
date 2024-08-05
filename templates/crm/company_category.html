@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block dashboard_app %}
-
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center">
         <h2 class="h4">Categorie Aziende</h2>
@@ -17,7 +16,7 @@
                 <div class="card-body">
                     <form method="post">
                         {% csrf_token %}
-                        {{ company_category_form.as_p }}
+                        {{ create_form.as_p }}
                         <button type="submit" name="create_category" class="btn bg-dark text-white">Crea Categoria</button>
                     </form>
                 </div>
@@ -42,22 +41,22 @@
                 </tr>
             </thead>
             <tbody>
-                {% for category in categories %}
+                {% for info in category_info %}
                     <tr class="category-item">
-                        <td>{{ category.name }}</td>
-                        <td class="col-md-7">{{ category.description }}</td>
+                        <td>{{ info.category.name }}</td>
+                        <td class="col-md-7">{{ info.category.description }}</td>
                         <td class="col-md-3">
                             <!-- Form per eliminare una categoria -->
                             <form method="post" style="display:inline;">
                                 {% csrf_token %}
-                                <input type="hidden" name="category_id" value="{{ category.id }}">
+                                <input type="hidden" name="category_id" value="{{ info.category.id }}">
                                 <button type="submit" name="delete_category" class="btn btn-danger btn-sm">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
 
                             <!-- Pulsante per mostrare il form di modifica -->
-                            <button class="btn bg-dark text-white btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#updateForm-{{ category.id }}" aria-expanded="false" aria-controls="updateForm-{{ category.id }}">
+                            <button class="btn bg-dark text-white btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#updateForm-{{ info.category.id }}" aria-expanded="false" aria-controls="updateForm-{{ info.category.id }}">
                                 Modifica
                             </button>
                         </td>
@@ -65,13 +64,13 @@
                     <tr>
                         <td colspan="3">
                             <!-- Form per aggiornare una categoria -->
-                            <div class="collapse mt-3" id="updateForm-{{ category.id }}">
+                            <div class="collapse mt-3" id="updateForm-{{ info.category.id }}">
                                 <div class="card">
                                     <div class="card-body">
                                         <form method="post">
                                             {% csrf_token %}
-                                            {{ company_category_form.as_p }}
-                                            <input type="hidden" name="category_id" value="{{ category.id }}">
+                                            {{ info.form.as_p }}
+                                            <input type="hidden" name="category_id" value="{{ info.category.id }}">
                                             <button type="submit" name="update_category" class="btn bg-dark text-white">Salva Modifiche</button>
                                         </form>
                                     </div>

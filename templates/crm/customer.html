@@ -17,7 +17,7 @@
                 <div class="card-body">
                     <form method="post">
                         {% csrf_token %}
-                        {{ customer_form.as_p }}
+                        {{ create_form.as_p }}
                         <button type="submit" name="create_customer" class="btn bg-dark text-white">Crea Cliente</button>
                     </form>
                 </div>
@@ -30,49 +30,66 @@
         <input type="text" id="searchInput" class="form-control" placeholder="Cerca cliente...">
     </div>
 
-    <!-- Lista dei clienti -->
+    <!-- Tabella dei clienti -->
     <div class="mt-4">
         <h3 class="h5">Lista Clienti</h3>
-        <ul class="list-group" id="customerList">
-            {% for customer in customers %}
-                <li class="list-group-item customer-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span>{{ customer.name }} - {{ customer.company.name }}</span>
-                        <div>
+        <table id="customerTable" class="table table-bordered w-100">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Azienda</th>
+                    <th>Mail</th>
+                    <th>Telefono</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for info in customer_info %}
+                    <tr class="customer-item">
+                        <td>{{ info.customer.name }}</td>
+                        <td>{{ info.customer.company.name }}</td>
+                        <td>{{ info.customer.email }}</td>
+                        <td>{{ info.customer.phone }}</td>
+                        <td>
                             <!-- Form per eliminare un cliente -->
                             <form method="post" style="display:inline;">
                                 {% csrf_token %}
-                                <input type="hidden" name="customer_id" value="{{ customer.id }}">
+                                <input type="hidden" name="customer_id" value="{{ info.customer.id }}">
                                 <button type="submit" name="delete_customer" class="btn btn-danger btn-sm">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
 
                             <!-- Pulsante per mostrare il form di modifica -->
-                            <button class="btn bg-dark text-white btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#updateForm-{{ customer.id }}" aria-expanded="false" aria-controls="updateForm-{{ customer.id }}">
+                            <button class="btn bg-dark text-white btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#updateForm-{{ info.customer.id }}" aria-expanded="false" aria-controls="updateForm-{{ info.customer.id }}">
                                 Modifica
                             </button>
-                        </div>
-                    </div>
-
-                    <!-- Form per aggiornare un cliente -->
-                    <div class="collapse mt-3" id="updateForm-{{ customer.id }}">
-                        <div class="card">
-                            <div class="card-body">
-                                <form method="post">
-                                    {% csrf_token %}
-                                    {{ customer_form.as_p }}
-                                    <input type="hidden" name="customer_id" value="{{ customer.id }}">
-                                    <button type="submit" name="update_customer" class="btn bg-dark text-white">Salva Modifiche</button>
-                                </form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <!-- Form per aggiornare un cliente -->
+                            <div class="collapse mt-3" id="updateForm-{{ info.customer.id }}">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            {{ info.form.as_p }}
+                                            <input type="hidden" name="customer_id" value="{{ info.customer.id }}">
+                                            <button type="submit" name="update_customer" class="btn bg-dark text-white">Salva Modifiche</button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </li>
-            {% empty %}
-                <li class="list-group-item">Nessun cliente disponibile.</li>
-            {% endfor %}
-        </ul>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3">Nessun cliente disponibile.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -81,8 +98,8 @@
     $(document).ready(function () {
         $('#searchInput').on('keyup', function () {
             var query = $(this).val().toLowerCase();
-            $('.customer-item').each(function () {
-                var customerText = $(this).find('span').text().toLowerCase(); // Nome e azienda del cliente
+            $('#customerTable tbody tr').each(function () {
+                var customerText = $(this).find('td').not(':last').text().toLowerCase(); // Nome e azienda del cliente
                 if (customerText.includes(query)) {
                     $(this).show();
                 } else {
