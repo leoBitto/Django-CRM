@@ -2,7 +2,7 @@ import logging
 from django.utils import timezone
 from gold_bi.models import CRMMontlySnapshot
 from django.db import transaction
-from crm.models import *
+from crm.models.base import *
 
 logger = logging.getLogger('gold_bi')
 

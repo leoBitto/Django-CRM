@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.urls import reverse_lazy
-from .models import Company, Supplier, Customer, CompanyCategory
-from .forms import CompanyForm, SupplierForm, CustomerForm, CompanyCategoryForm
+from ..models.base import Company, Supplier, Customer, CompanyCategory
+from ..forms import CompanyForm, SupplierForm, CustomerForm, CompanyCategoryForm
 from django.contrib import messages
 
 

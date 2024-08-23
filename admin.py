@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CompanyCategory, Company, Supplier, Customer
+from .models.base import CompanyCategory, Company, Supplier, Customer
 
 @admin.register(CompanyCategory)
 class CompanyCategoryAdmin(admin.ModelAdmin):
