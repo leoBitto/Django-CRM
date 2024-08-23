@@ -1,10 +1,10 @@
 import logging
 from django.utils import timezone
-from gold_bi.models import CRMMontlySnapshot
+from crm.models.aggregated import CRMMontlySnapshot
 from django.db import transaction
 from crm.models.base import *
 
-logger = logging.getLogger('gold_bi')
+logger = logging.getLogger('app')
 
 def aggregate_crm_monthly():
     try:
