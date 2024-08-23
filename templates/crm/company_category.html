@@ -56,28 +56,32 @@
                             </form>
 
                             <!-- Pulsante per mostrare il form di modifica -->
-                            <button class="btn bg-dark text-white btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#updateForm-{{ info.category.id }}" aria-expanded="false" aria-controls="updateForm-{{ info.category.id }}">
+                            <button class="btn bg-dark text-white btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#updateModal-{{ info.category.id }}" aria-expanded="false" aria-controls="updateModal-{{ info.category.id }}">
                                 Modifica
                             </button>
                         </td>
                     </tr>
-                    <tr>
-                        <td colspan="3">
-                            <!-- Form per aggiornare una categoria -->
-                            <div class="collapse mt-3" id="updateForm-{{ info.category.id }}">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <form method="post">
-                                            {% csrf_token %}
-                                            {{ info.form.as_p }}
-                                            <input type="hidden" name="category_id" value="{{ info.category.id }}">
-                                            <button type="submit" name="update_category" class="btn bg-dark text-white">Salva Modifiche</button>
-                                        </form>
-                                    </div>
+
+                    <!-- Modal per aggiornare la categoria -->
+                    <div class="modal fade" id="updateModal-{{ info.category.id }}" tabindex="-1" aria-labelledby="updateModalLabel-{{ info.category.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="updateModalLabel-{{ info.category.id }}">Modifica Categoria</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        {{ info.form.as_p }}
+                                        <input type="hidden" name="category_id" value="{{ info.category.id }}">
+                                        <button type="submit" name="update_category" class="btn bg-dark text-white">Salva Modifiche</button>
+                                    </form>
                                 </div>
                             </div>
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
+
                 {% empty %}
                     <tr>
                         <td colspan="3">Nessuna categoria aziendale disponibile.</td>

@@ -61,31 +61,35 @@
                             </form>
 
                             <!-- Pulsante per mostrare il form di modifica -->
-                            <button class="btn bg-dark text-white btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#updateForm-{{ info.supplier.id }}" aria-expanded="false" aria-controls="updateForm-{{ info.supplier.id }}">
+                            <button class="btn bg-dark text-white btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#updateModal-{{ info.supplier.id }}" aria-expanded="false" aria-controls="updateModal-{{ info.supplier.id }}">
                                 Modifica
                             </button>
                         </td>
                     </tr>
-                    <tr>
-                        <td colspan="4">
-                            <!-- Form per aggiornare un fornitore -->
-                            <div class="collapse mt-3" id="updateForm-{{ info.supplier.id }}">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <form method="post">
-                                            {% csrf_token %}
-                                            {{ info.form.as_p }}
-                                            <input type="hidden" name="supplier_id" value="{{ info.supplier.id }}">
-                                            <button type="submit" name="update_supplier" class="btn bg-dark text-white">Salva Modifiche</button>
-                                        </form>
-                                    </div>
+
+                    <!-- Modal per aggiornare il fornitore -->
+                    <div class="modal fade" id="updateModal-{{ info.supplier.id }}" tabindex="-1" aria-labelledby="updateModalLabel-{{ info.supplier.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="updateModalLabel-{{ info.supplier.id }}">Modifica Fornitore</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        {{ info.form.as_p }}
+                                        <input type="hidden" name="supplier_id" value="{{ info.supplier.id }}">
+                                        <button type="submit" name="update_supplier" class="btn bg-dark text-white">Salva Modifiche</button>
+                                    </form>
                                 </div>
                             </div>
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
+
                 {% empty %}
                     <tr>
-                        <td colspan="3">Nessun fornitore disponibile.</td>
+                        <td colspan="5">Nessun fornitore disponibile.</td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -99,7 +103,7 @@
         $('#searchInput').on('keyup', function () {
             var query = $(this).val().toLowerCase();
             $('#supplierTable tbody tr').each(function () {
-                var supplierText = $(this).find('td').not(':last').text().toLowerCase(); // Nome e azienda del fornitore
+                var supplierText = $(this).find('td').not(':last').text().toLowerCase(); // Nome, azienda, mail e telefono del fornitore
                 if (supplierText.includes(query)) {
                     $(this).show();
                 } else {
