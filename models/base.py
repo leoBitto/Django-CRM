@@ -20,7 +20,7 @@ class Company(models.Model):
         ('Customer', _('Cliente')),
     ]
     name = models.CharField(_("nome"), max_length=100, db_index=True)
-    address = models.TextField(_("indirizzo"))
+    address = models.CharField(_("indirizzo"), max_length=200)
     category = models.ForeignKey(CompanyCategory, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("categoria"))
     website = models.URLField(_("sito web"), blank=True)
     phone = models.CharField(_("telefono"), max_length=20, blank=True)
