@@ -1,12 +1,8 @@
+# crm/models/aggregated.py
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from gold_bi.models import MonthlyAggregationBase
 
-
-# CRM: Fotografie Mensili
-class CRMMontlySnapshot(models.Model):
-    timestamp = models.DateTimeField(auto_now_add=True)
-    month = models.IntegerField(null=True, blank=True)
-    year = models.IntegerField(null=True, blank=True)
+class CRMMontlySnapshot(MonthlyAggregationBase):
     total_suppliers = models.IntegerField(null=True, blank=True)
     total_customers = models.IntegerField(null=True, blank=True)
     total_leads = models.IntegerField(null=True, blank=True)
@@ -17,4 +13,3 @@ class CRMMontlySnapshot(models.Model):
     class Meta:
         verbose_name = "CRM Monthly Snapshot"
         verbose_name_plural = "CRM Monthly Snapshots"
-
