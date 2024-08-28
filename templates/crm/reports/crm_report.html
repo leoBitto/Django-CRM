@@ -1,0 +1,72 @@
+{% extends "backoffice/backoffice_base.html" %}
+{% load static %}
+
+{% block dashboard_app %}
+<div class="container mt-4">
+    <h1 class="mb-4">
+        <i class="fas fa-users me-2 text-primary"></i>
+        Report CRM - Aggregazione Mensile
+    </h1>
+
+    <!-- Sezione per il grafico -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Andamento CRM - {{ start_date }} a {{ end_date }}</h5>
+        </div>
+        <div class="card-body">
+            <!-- Inserisci il grafico Plotly generato -->
+            <div id="plotly-graph">
+                {{ graph|safe }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sezione per la tabella dei dati aggregati -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Dati Aggregati - {{ start_date }} a {{ end_date }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Data</th>
+                            <th>Fornitori Totali</th>
+                            <th>Clienti Totali</th>
+                            <th>Leads Totali</th>
+                            <th>Clienti Attivi</th>
+                            <th>Clienti Inattivi</th>
+                            <th>Clienti Fedeli</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in report_data %}
+                        <tr>
+                            <td>{{ record.date }}</td>
+                            <td>{{ record.total_suppliers }}</td>
+                            <td>{{ record.total_customers }}</td>
+                            <td>{{ record.total_leads }}</td>
+                            <td>{{ record.total_active_customers }}</td>
+                            <td>{{ record.total_inactive_customers }}</td>
+                            <td>{{ record.total_loyal_customers }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">Nessun dato disponibile per il periodo selezionato.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottone per tornare indietro -->
+    <div class="mt-4">
+        <a href="{% url 'backoffice:select_report_type' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Torna alla Selezione del Report
+        </a>
+    </div>
+</div>
+{% endblock %}

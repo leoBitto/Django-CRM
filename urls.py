@@ -10,5 +10,5 @@ urlpatterns = [
     path('suppliers/', SupplierView.as_view(), name='supplier_view'),
     path('customers/', CustomerView.as_view(), name='customer_view'),
 
-    path('', GenerateReportView.as_view(), name='generate_report'),
+    path('generate-report', GenerateReportView.as_view(), name='generate_report'),
 ]
