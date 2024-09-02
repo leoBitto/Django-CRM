@@ -1,97 +1,103 @@
-from django.views import View
+# inventory/views/aggregated.py
 from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin
-from crm.models.aggregated import CRMMontlySnapshot
-import plotly.graph_objs as go
-from plotly.offline import plot
+from datetime import datetime
+from crm.models.aggregated import *
+import logging
+logger = logging.getLogger('app')
+from django.db.models import Q
 
-class GenerateReportView(LoginRequiredMixin, View):
-    """
-    Vista per generare report basati sui dati CRM mensili.
-    Gestisce la visualizzazione dei dati e la generazione di grafici.
-    """
-    template_name = 'crm/reports/crm_report.html'
-
-    def get_queryset(self, start_date, end_date):
-        """
-        Recupera il queryset dei dati basato sull'intervallo di date.
-
-        :param start_date: Data di inizio dell'intervallo
-        :param end_date: Data di fine dell'intervallo
-        :return: QuerySet dei dati filtrati
-        """
-        return CRMMontlySnapshot.objects.filter(date__range=[start_date, end_date]).order_by('-date')
-
-    def generate_graph(self, data, x_data_key='date', y_data_keys=None, graph_type='lines+markers', title=None, xaxis_title='Date', yaxis_title='Value'):
-        """
-        Genera un grafico utilizzando Plotly basato sui dati forniti.
-
-        :param data: Lista di oggetti contenenti i dati da visualizzare
-        :param x_data_key: Chiave per i dati sull'asse X
-        :param y_data_keys: Lista di chiavi per i dati sull'asse Y
-        :param graph_type: Tipo di grafico (es. 'lines+markers', 'bars', etc.)
-        :param title: Titolo del grafico
-        :param xaxis_title: Titolo dell'asse X
-        :param yaxis_title: Titolo dell'asse Y
-        :return: Div HTML del grafico
-        """
-        traces = []
-        for y_data_key in y_data_keys:
-            y_data = [getattr(item, y_data_key) for item in data]
-            trace = go.Scatter(
-                x=[getattr(item, x_data_key) for item in data],
-                y=y_data,
-                mode=graph_type,
-                name=y_data_key.replace('_', ' ').capitalize()
-            )
-            traces.append(trace)
-
-        layout = go.Layout(
-            title=title or 'CRM Data Report',
-            xaxis=dict(title=xaxis_title),
-            yaxis=dict(title=yaxis_title),
-            template='plotly_dark'
+def filter_data_by_aggregation_type(model, aggregation_type, start_date, end_date):
+    if aggregation_type == 'daily':
+        return model.objects.filter(date__range=(start_date, end_date))
+    
+    elif aggregation_type == 'weekly':
+        start_week = start_date.isocalendar()[1]
+        end_week = end_date.isocalendar()[1]
+        return model.objects.filter(
+            Q(year=start_date.year, week__gte=start_week) | 
+            Q(year=end_date.year, week__lte=end_week)
         )
-
-        fig = go.Figure(data=traces, layout=layout)
-        graph_div = plot(fig, output_type='div')
-        return graph_div
-
-    def get(self, request, *args, **kwargs):
-        """
-        Gestisce la richiesta GET per generare e visualizzare il report.
-
-        :param request: Oggetto HttpRequest
-        :return: Risposta HttpResponse con il contesto del report e il grafico
-        """
-        start_date = request.GET.get('start_date')
-        end_date = request.GET.get('end_date')
-
-        report_data = self.get_queryset(start_date, end_date)
-        graph = self.generate_graph(
-            report_data,
-            x_data_key='date',
-            y_data_keys=['total_suppliers', 'total_customers', 'total_leads', 'total_active_customers', 'total_inactive_customers', 'total_loyal_customers'],
-            graph_type='lines+markers',  # Cambia questo valore se necessario
-            title='CRM Monthly Report',
-            xaxis_title='Date',
-            yaxis_title='Counts'
+    
+    elif aggregation_type == 'monthly':
+        start_month = start_date.month
+        end_month = end_date.month
+        return model.objects.filter(
+            Q(year=start_date.year, month__gte=start_month) | 
+            Q(year=end_date.year, month__lte=end_month)
         )
+    
+    elif aggregation_type == 'quarterly':
+        start_quarter = (start_date.month - 1) // 3 + 1
+        end_quarter = (end_date.month - 1) // 3 + 1
+        return model.objects.filter(
+            Q(year=start_date.year, quarter__gte=start_quarter) | 
+            Q(year=end_date.year, quarter__lte=end_quarter)
+        )
+    
+    elif aggregation_type == 'yearly':
+        return model.objects.filter(year__range=(start_date.year, end_date.year))
+    
+    else:
+        raise ValueError(f"Unknown aggregation type: {aggregation_type}")
 
-        context = {
-            'start_date': start_date,
-            'end_date': end_date,
-            'report_data': report_data,
-            'graph': graph
-        }
-        return render(request, self.template_name, context)
 
-    def post(self, request, *args, **kwargs):
-        """
-        Gestisce la richiesta POST, se necessario.
 
-        :param request: Oggetto HttpRequest
-        :return: Risposta HttpResponse
-        """
-        # Implementa la logica per le richieste POST se necessario
-        pass
+
+def generate_report(request):
+    # Ottieni i parametri dalla query string
+    report_type = request.GET.get('report_type')
+    aggregation_type = request.GET.get('aggregation_type')
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+
+    # Verifica se tutti i parametri necessari sono presenti
+    if not all([report_type, aggregation_type, start_date_str, end_date_str]):
+        return render(request, 'crm/reports/report.html', {
+            'error': 'Parametri mancanti. Assicurati di fornire tutti i parametri richiesti.'
+        })
+
+    # Conversione delle date da stringa a oggetto datetime
+    try:
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+    except ValueError:
+        return render(request, 'crm/reports/report.html', {
+            'error': 'Formato della data non valido.'
+        })
+    
+    logger.info(f"report_type: {report_type}")
+    logger.info(f"aggregation_type: {aggregation_type}")
+    logger.info(f"start_date: {start_date}")
+    logger.info(f"end_date: {end_date}")
+
+
+    # Mappatura dei report_type e aggregation_type ai modelli corrispondenti
+    model_map = {
+        'crm': {
+            'monthly': CRMMontlySnapshot,
+        },
+
+    }
+
+    # Selezione del modello corrispondente
+    model = model_map.get(report_type, {}).get(aggregation_type)
+    if not model:
+        return render(request, 'crm/reports/report.html', {
+            'error': 'Tipo di report o aggregazione non valido.'
+        })
+    
+    logger.info(f"model: {model}")
+
+    # Query sui dati filtrati per date
+    data = filter_data_by_aggregation_type(model, aggregation_type, start_date, end_date)    
+
+    logger.info(f"data: {data}")
+
+    # Passa i dati al template generico
+    return render(request, 'crm/reports/report.html', {
+        'data': data,
+        'report_type': report_type,
+        'aggregation_type': aggregation_type,
+        'start_date': start_date,
+        'end_date': end_date,
+    })
