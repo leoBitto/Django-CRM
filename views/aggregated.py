@@ -5,6 +5,11 @@ from crm.models.aggregated import *
 import logging
 logger = logging.getLogger('app')
 from django.db.models import Q
+from django.views import View
+
+class GenerateReportView(View):
+    pass
+
 
 def filter_data_by_aggregation_type(model, aggregation_type, start_date, end_date):
     if aggregation_type == 'daily':
