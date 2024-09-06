@@ -1,108 +1,55 @@
-# inventory/views/aggregated.py
+# crm/views/aggregated.py
 from django.shortcuts import render
-from datetime import datetime
 from crm.models.aggregated import *
 import logging
-logger = logging.getLogger('app')
-from django.db.models import Q
+logger = logging.getLogger('reports')
 from django.views import View
+from backoffice.forms import MonthlyAggregationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from backoffice.utils import *
 
-class GenerateReportView(View):
-    pass
+class CRMReportView(LoginRequiredMixin, View):
+    template_name = 'backoffice/reports/select_aggregation.html'
 
+    def get(self, request, *args, **kwargs):
+        context = {
+            'monthly_form': MonthlyAggregationForm(),
+            'report_type': 'CRM',
+        }
+        return render(request, self.template_name, context)
 
-def filter_data_by_aggregation_type(model, aggregation_type, start_date, end_date):
-    if aggregation_type == 'daily':
-        return model.objects.filter(date__range=(start_date, end_date))
-    
-    elif aggregation_type == 'weekly':
-        start_week = start_date.isocalendar()[1]
-        end_week = end_date.isocalendar()[1]
-        return model.objects.filter(
-            Q(year=start_date.year, week__gte=start_week) | 
-            Q(year=end_date.year, week__lte=end_week)
-        )
-    
-    elif aggregation_type == 'monthly':
-        start_month = start_date.month
-        end_month = end_date.month
-        return model.objects.filter(
-            Q(year=start_date.year, month__gte=start_month) | 
-            Q(year=end_date.year, month__lte=end_month)
-        )
-    
-    elif aggregation_type == 'quarterly':
-        start_quarter = (start_date.month - 1) // 3 + 1
-        end_quarter = (end_date.month - 1) // 3 + 1
-        return model.objects.filter(
-            Q(year=start_date.year, quarter__gte=start_quarter) | 
-            Q(year=end_date.year, quarter__lte=end_quarter)
-        )
-    
-    elif aggregation_type == 'yearly':
-        return model.objects.filter(year__range=(start_date.year, end_date.year))
-    
-    else:
-        raise ValueError(f"Unknown aggregation type: {aggregation_type}")
+    def post(self, request, *args, **kwargs):
+        form = None
+        aggregation_model = None
+        period_type = None
+        selected_period = None
 
+        if 'monthly_submit' in request.POST:
+                form = MonthlyAggregationForm(request.POST)
+                if form.is_valid():
+                    aggregation_model = CRMMontlyAggregation
+                    period_type = 'month'
+                    selected_period = {
+                        'month': form.cleaned_data['month'],
+                        'year': form.cleaned_data['year']
+                    }
 
+        if form and form.is_valid():
+            # Ottieni i dati per i 6 periodi precedenti
+            previous_periods_data = get_previous_periods(
+                aggregation_model, selected_period, period_type, num_previous_periods=6
+            )
 
+            return render(request, 'crm/reports/crm_report.html', {
+                'data': previous_periods_data,
+                'report_type': 'CRM',
+                'period_type': period_type,
+            })
 
-def generate_report(request):
-    # Ottieni i parametri dalla query string
-    report_type = request.GET.get('report_type')
-    aggregation_type = request.GET.get('aggregation_type')
-    start_date_str = request.GET.get('start_date')
-    end_date_str = request.GET.get('end_date')
-
-    # Verifica se tutti i parametri necessari sono presenti
-    if not all([report_type, aggregation_type, start_date_str, end_date_str]):
-        return render(request, 'crm/reports/report.html', {
-            'error': 'Parametri mancanti. Assicurati di fornire tutti i parametri richiesti.'
-        })
-
-    # Conversione delle date da stringa a oggetto datetime
-    try:
-        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-        end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
-    except ValueError:
-        return render(request, 'crm/reports/report.html', {
-            'error': 'Formato della data non valido.'
-        })
-    
-    logger.info(f"report_type: {report_type}")
-    logger.info(f"aggregation_type: {aggregation_type}")
-    logger.info(f"start_date: {start_date}")
-    logger.info(f"end_date: {end_date}")
+        context = {
+            'monthly_form': form if 'monthly_submit' in request.POST else MonthlyAggregationForm(),
+            'report_type': 'CRM',
+        }
+        return render(request, self.template_name, context)
 
 
-    # Mappatura dei report_type e aggregation_type ai modelli corrispondenti
-    model_map = {
-        'crm': {
-            'monthly': CRMMontlySnapshot,
-        },
-
-    }
-
-    # Selezione del modello corrispondente
-    model = model_map.get(report_type, {}).get(aggregation_type)
-    if not model:
-        return render(request, 'crm/reports/report.html', {
-            'error': 'Tipo di report o aggregazione non valido.'
-        })
-    
-    logger.info(f"model: {model}")
-
-    # Query sui dati filtrati per date
-    data = filter_data_by_aggregation_type(model, aggregation_type, start_date, end_date)    
-
-    logger.info(f"data: {data}")
-
-    # Passa i dati al template generico
-    return render(request, 'crm/reports/report.html', {
-        'data': data,
-        'report_type': report_type,
-        'aggregation_type': aggregation_type,
-        'start_date': start_date,
-        'end_date': end_date,
-    })
