@@ -27,6 +27,10 @@ class Company(models.Model):
     email = models.EmailField(_("email"), blank=True)
     notes = models.TextField(_("note"), blank=True)
     type = models.CharField(_("tipologia"), max_length=20, choices=STATUSES, default='Supplier')
+
+    is_own_company = models.BooleanField(_("azienda propria"), default=False)  # Identifica se è l'azienda che usa il software
+
+
     class Meta:
         verbose_name = _("azienda")
         verbose_name_plural = _("aziende")
