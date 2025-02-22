@@ -1,5 +1,3 @@
-# CRM models.py
-
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -15,10 +13,6 @@ class CompanyCategory(models.Model):
         return self.name
 
 class Company(models.Model):
-    STATUSES = [
-        ('Supplier', _('Fornitore')),
-        ('Customer', _('Cliente')),
-    ]
     name = models.CharField(_("nome"), max_length=100, db_index=True)
     address = models.CharField(_("indirizzo"), max_length=200)
     category = models.ForeignKey(CompanyCategory, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("categoria"))
@@ -26,10 +20,7 @@ class Company(models.Model):
     phone = models.CharField(_("telefono"), max_length=20, blank=True)
     email = models.EmailField(_("email"), blank=True)
     notes = models.TextField(_("note"), blank=True)
-    type = models.CharField(_("tipologia"), max_length=20, choices=STATUSES, default='Supplier')
-
-    is_own_company = models.BooleanField(_("azienda propria"), default=False)  # Identifica se è l'azienda che usa il software
-
+    is_own_company = models.BooleanField(_("azienda propria"), default=False)
 
     class Meta:
         verbose_name = _("azienda")
@@ -38,38 +29,24 @@ class Company(models.Model):
     def __str__(self):
         return self.name
 
-
-class Supplier(models.Model):
-    name = models.CharField(_("nome"), max_length=100, db_index=True)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='suppliers', verbose_name=_("azienda"))
-    email = models.EmailField(_("email"))
-    phone = models.CharField(_("telefono"), max_length=25)
-    notes = models.TextField(_("note"), blank=True)
-
-    class Meta:
-        verbose_name = _("fornitore")
-        verbose_name_plural = _("fornitori")
-
-    def __str__(self):
-        return f"{self.name} - {self.company.name}"
-
-class Customer(models.Model):
-    STATUSES = [
-        ('LEAD', _('Lead')),
-        ('ACTIVE', _('Cliente Attivo')),
-        ('INACTIVE', _('Cliente Inattivo')),
-        ('LOYAL', _('Cliente Fidelizzato')),
+class Person(models.Model):
+    ROLES = [
+        ('PRIMARY', _('Contatto Principale')),
+        ('PURCHASING', _('Responsabile Acquisti')),
+        ('SALES', _('Responsabile Vendite')),
+        ('OTHER', _('Altro')),
     ]
-    
-    name = models.CharField(_("nome"), max_length=100, db_index=True)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='customers', verbose_name=_("azienda"))
+
+    first_name = models.CharField(_("nome"), max_length=50)
+    last_name = models.CharField(_("cognome"), max_length=50)
     email = models.EmailField(_("email"))
     phone = models.CharField(_("telefono"), max_length=20)
-    status = models.CharField(_("stato"), max_length=20, choices=STATUSES, default='LEAD')
+    role = models.CharField(_("ruolo"), max_length=20, choices=ROLES, default='OTHER')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='contacts', verbose_name=_("azienda"))
 
     class Meta:
-        verbose_name = _("cliente")
-        verbose_name_plural = _("clienti")
+        verbose_name = _("persona di riferimento")
+        verbose_name_plural = _("persone di riferimento")
 
     def __str__(self):
-        return f"{self.name} - {self.company.name}"
+        return f"{self.first_name} {self.last_name} - {self.company.name}"

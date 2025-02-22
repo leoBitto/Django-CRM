@@ -1,29 +1,28 @@
 from django.contrib import admin
-from .models.base import CompanyCategory, Company, Supplier, Customer
+from .models.base import CompanyCategory, Company, Person
 
-@admin.register(CompanyCategory)
 class CompanyCategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
     search_fields = ('name',)
-    ordering = ('name',)
 
-@admin.register(Company)
+class PersonInline(admin.TabularInline):
+    model = Person
+    extra = 1
+    autocomplete_fields = ['company']
+
 class CompanyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'type', 'category', 'phone', 'email', 'website')
-    list_filter = ('type', 'category')
-    search_fields = ('name', 'address', 'phone', 'email')
-    ordering = ('name',)
+    list_display = ('name', 'address', 'category', 'phone', 'email', 'is_own_company')
+    list_filter = ('category', 'is_own_company')
+    search_fields = ('name', 'address', 'email')
+    inlines = [PersonInline]
+    autocomplete_fields = ['category']
 
-@admin.register(Supplier)
-class SupplierAdmin(admin.ModelAdmin):
-    list_display = ('name', 'company', 'phone', 'email')
-    list_filter = ('company',)
-    search_fields = ('name', 'phone', 'email', 'company__name')
-    ordering = ('name',)
+class PersonAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'role', 'company', 'email', 'phone')
+    list_filter = ('role', 'company')
+    search_fields = ('first_name', 'last_name', 'email', 'company__name')
+    autocomplete_fields = ['company']
 
-@admin.register(Customer)
-class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'company', 'status', 'phone', 'email')
-    list_filter = ('status', 'company')
-    search_fields = ('name', 'phone', 'email', 'company__name')
-    ordering = ('name',)
+admin.site.register(CompanyCategory, CompanyCategoryAdmin)
+admin.site.register(Company, CompanyAdmin)
+admin.site.register(Person, PersonAdmin)
