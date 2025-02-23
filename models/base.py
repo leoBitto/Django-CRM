@@ -29,6 +29,12 @@ class Company(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        # Se questa company è segnata come propria, allora resetta le altre
+        if self.is_own_company:
+            Company.objects.exclude(pk=self.pk).update(is_own_company=False)
+        super().save(*args, **kwargs)
+
 class Person(models.Model):
     ROLES = [
         ('PRIMARY', _('Contatto Principale')),

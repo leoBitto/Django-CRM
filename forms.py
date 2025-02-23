@@ -1,115 +1,39 @@
-# crm/forms.py
-
 from django import forms
-from django.utils.translation import gettext_lazy as _
-from .models.base import Company, Supplier, Customer, CompanyCategory
-
+from .models.base import CompanyCategory, Company, Person
 
 class CompanyCategoryForm(forms.ModelForm):
     class Meta:
         model = CompanyCategory
         fields = ['name', 'description']
-        labels = {
-            'name': _('Nome'),
-            'description': _('Descrizione'),
-        }
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome categoria'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Descrizione', 'rows': 3}),
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['name'].widget.attrs.update({'placeholder': _('Inserisci il nome della categoria')})
-       
-
 
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
-        fields = ['name', 'address', 'category', 'type', 'website', 'phone', 'email', 'notes']
-        labels = {
-            'name': _('Nome'),
-            'address': _('Indirizzo'),
-            'category': _('Categoria'),
-            'type': _('Tipologia'),
-            'website': _('Sito Web'),
-            'phone': _('Telefono'),
-            'email': _('Email'),
-            'notes': _('Note'),
-        }
+        fields = ['name', 'address', 'category', 'website', 'phone', 'email', 'notes', 'is_own_company']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'address': forms.TextInput(attrs={'class': 'form-control'}),
-            'category': forms.Select(attrs={'class': 'form-control'}),
-            'type': forms.Select(attrs={'class': 'form-control'}),
-            'website': forms.URLInput(attrs={'class': 'form-control'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome azienda'}),
+            'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Indirizzo'}),
+            'category': forms.Select(attrs={'class': 'form-select'}),
+            'website': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Sito web'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Telefono'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Note', 'rows': 3}),
+            'is_own_company': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['name'].widget.attrs.update({'placeholder': _('Inserisci il nome della azienda')})
-        self.fields['address'].widget.attrs.update({'placeholder': _('Inserisci l\'indirizzo della azienda')})
-        self.fields['phone'].widget.attrs.update({'placeholder': _('Inserisci il numero di telefono')})
-        self.fields['email'].widget.attrs.update({'placeholder': _('Inserisci l\'email')})
-        self.fields['website'].widget.attrs.update({'placeholder': _('Inserisci il sito web (opzionale)')})
-        self.fields['notes'].widget.attrs.update({'placeholder': _('Inserisci eventuali note (opzionale)')})
-
-
-class SupplierForm(forms.ModelForm):
+class PersonForm(forms.ModelForm):
     class Meta:
-        model = Supplier
-        fields = ['name', 'company', 'email', 'phone', 'notes']
-        labels = {
-            'name': _('Nome'),
-            'company': _('Azienda'),
-            'email': _('Email'),
-            'phone': _('Telefono'),
-            'notes': _('Note'),
-        }
+        model = Person
+        fields = ['first_name', 'last_name', 'email', 'phone', 'role', 'company']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'company': forms.Select(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control'}),
-            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cognome'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Telefono'}),
+            'role': forms.Select(attrs={'class': 'form-select'}),
+            'company': forms.Select(attrs={'class': 'form-select'}),
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['name'].widget.attrs.update({'placeholder': _('Inserisci il nome del fornitore')})
-        self.fields['company'].queryset = Company.objects.filter(type='Supplier')
-        self.fields['email'].widget.attrs.update({'placeholder': _('Inserisci l\'email del fornitore')})
-        self.fields['phone'].widget.attrs.update({'placeholder': _('Inserisci il telefono del fornitore')})
-        self.fields['notes'].widget.attrs.update({'placeholder': _('Inserisci eventuali note (opzionale)')})
-
-
-class CustomerForm(forms.ModelForm):
-    class Meta:
-        model = Customer
-        fields = ['name', 'company', 'email', 'phone', 'status']
-        labels = {
-            'name': _('Nome'),
-            'company': _('Azienda'),
-            'email': _('Email'),
-            'phone': _('Telefono'),
-            'status': _('Stato'),
-        }
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'company': forms.Select(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control'}),
-            'status': forms.Select(attrs={'class': 'form-control'}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['name'].widget.attrs.update({'placeholder': _('Inserisci il nome del cliente')})
-        self.fields['company'].queryset = Company.objects.filter(type='Customer')
-        self.fields['email'].widget.attrs.update({'placeholder': _('Inserisci l\'email del cliente')})
-        self.fields['phone'].widget.attrs.update({'placeholder': _('Inserisci il telefono del cliente')})
-        self.fields['status'].widget.attrs.update({'placeholder': _('Seleziona lo stato del cliente')})
