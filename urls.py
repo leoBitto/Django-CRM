@@ -1,13 +1,18 @@
 from django.urls import path
-from crm.views import CompanyListView, CompanyDetailView, PersonListView, PersonDetailView, CompanyCategoryListView, CompanyCategoryDetailView
+from . import views
 
 app_name = 'crm'
 
 urlpatterns = [
-    path('companies/', CompanyListView.as_view(), name='company_list'),
-    path('companies/<int:company_id>/', CompanyDetailView.as_view(), name='company_detail'),
-    path('person/', PersonListView.as_view(), name='person_list'),
-    path('person/<int:person_id>/', PersonDetailView.as_view(), name='person_detail'),
-    path('company_categories/', CompanyCategoryListView.as_view(), name='category_list'),
-    path('company_categories/<int:category_id>/', CompanyCategoryDetailView.as_view(), name='category_detail'),
+    # Company URLs
+    path('companies/', views.CompanyListView.as_view(), name='company_list'),
+    path('companies/<int:company_id>/', views.CompanyDetailView.as_view(), name='company_detail'),
+    
+    # Person URLs
+    path('people/', views.PersonListView.as_view(), name='person_list'),
+    path('people/<int:person_id>/', views.PersonDetailView.as_view(), name='person_detail'),
+    
+    # Company Category URLs
+    path('categories/', views.CompanyCategoryListView.as_view(), name='category_list'),
+    path('categories/<int:category_id>/', views.CompanyCategoryDetailView.as_view(), name='category_detail'),
 ]
