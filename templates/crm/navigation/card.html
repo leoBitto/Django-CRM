@@ -1,0 +1,29 @@
+    <!-- CRM -->
+    <div class="col-12 col-md-4 mb-3">
+        <div class="card p-3">
+            <div class="card-body text-center pt-3 shadow-sm">
+                <div class="d-flex justify-content-center align-items-center gap-2 mb-3">
+                    <i class="fas fa-building fa-2x"></i>
+                    <h5 class="card-title mb-0">CRM</h5>
+                </div>
+                <div class="accordion" id="crmAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingCRM">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCRM" aria-expanded="false" aria-controls="collapseCRM">
+                                Gestisci CRM
+                            </button>
+                        </h2>
+                        <div id="collapseCRM" class="accordion-collapse collapse" aria-labelledby="headingCRM" data-bs-parent="#crmAccordion">
+                            <div class="accordion-body">
+                                <ul class="list-unstyled">
+                                    <li><a href="{% url 'crm:company_list' %}" class="btn btn-outline-dark my-1 w-100 text-start"><i class="fas fa-industry me-2"></i> Aziende</a></li>
+                                    <li><a href="{% url 'crm:person_list' %}" class="btn btn-outline-dark my-1 w-100 text-start"><i class="fas fa-user-friends me-2"></i> Persone</a></li>
+                                    <li><a href="{% url 'crm:category_list' %}" class="btn btn-outline-dark my-1 w-100 text-start"><i class="fas fa-list me-2"></i> Categorie</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
-from crm.models import Company, Person, CompanyCategory
+from crm.models.base import Company, Person, CompanyCategory
 from crm.forms import CompanyForm, PersonForm, CompanyCategoryForm
 
 class CompanyListView(View):
