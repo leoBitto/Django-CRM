@@ -4,7 +4,7 @@ from crm.models.base import Company, Person, CompanyCategory
 from crm.forms import CompanyForm, PersonForm, CompanyCategoryForm
 
 class CompanyListView(View):
-    template_name = 'crm/companies.html'
+    template_name = 'crm/company_list.html'
 
     def get(self, request, *args, **kwargs):
         companies = Company.objects.all()
@@ -49,7 +49,7 @@ class CompanyDetailView(View):
         return render(request, self.template_name, {'company': company, 'form': form})
 
 class PersonListView(View):
-    template_name = 'crm/people.html'
+    template_name = 'crm/person_list.html'
 
     def get(self, request, *args, **kwargs):
         people = Person.objects.all()
@@ -94,7 +94,7 @@ class PersonDetailView(View):
         return render(request, self.template_name, {'person': person, 'form': form})
 
 class CompanyCategoryListView(View):
-    template_name = 'crm/categories.html'
+    template_name = 'crm/category_list.html'
 
     def get(self, request, *args, **kwargs):
         categories = CompanyCategory.objects.all()
