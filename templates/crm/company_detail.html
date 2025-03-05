@@ -1,0 +1,27 @@
+{% extends "backoffice/backoffice.html" %}
+{% load static %}
+
+{% block main %}
+<div class="container mt-4">
+    <h2 class="h4 text-center text-md-start">
+        <i class="fas fa-building me-2"></i>Dettaglio Azienda
+    </h2>
+    <div class="card p-4 shadow-sm">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="d-flex justify-content-between mt-3">
+                <button type="submit" name="update_company" class="btn btn-success">
+                    <i class="fas fa-save me-2"></i>Salva Modifiche
+                </button>
+                <button type="submit" name="delete_company" class="btn btn-danger" onclick="return confirm('Sei sicuro di voler eliminare questa azienda?');">
+                    <i class="fas fa-trash-alt me-2"></i>Elimina Azienda
+                </button>
+            </div>
+        </form>
+    </div>
+    <a href="{% url 'crm:company_list' %}" class="btn btn-outline-dark mt-3">
+        <i class="fa-solid fa-reply me-2"></i>Torna alla Lista
+    </a>
+</div>
+{% endblock %}

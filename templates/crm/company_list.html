@@ -1,25 +1,20 @@
 {% extends "backoffice/backoffice.html" %}
 {% load static %}
 
-{% block extrahead %}
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-{% endblock %}
 
 {% block main %}
 <div class="container mt-4">
     <!-- Intestazione -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-row flex-md-row justify-content-between align-items-center mb-4">
         <h2 class="h4 text-center text-md-start">
             <i class="fas fa-building me-2"></i>Aziende
         </h2>
-        <div class="d-flex flex-row justify-content-between align-items-center mb-4">
-            <button class="btn bg-dark text-white mt-2 mt-md-0" data-bs-toggle="modal" data-bs-target="#createCompanyModal">
+        <div class="d-flex flex-row justify-content-between align-items-center">
+            <button class="btn bg-dark text-white" data-bs-toggle="modal" data-bs-target="#createCompanyModal">
                 <i class="fas fa-plus-circle me-2"></i>
-                <span class="d-none d-md-inline">Aggiungi Azienda</span>
             </button>
-            <a href="{% url 'backoffice:backoffice' %}" class="btn btn-outline-dark mt-2 mt-md-0">
+            <a href="{% url 'backoffice:backoffice' %}" class="btn btn-outline-dark ms-2">
                 <i class="fa-solid fa-reply me-2"></i>
-                <span class="d-none d-md-inline">Indietro</span>
             </a>
         </div>
     </div>
@@ -35,7 +30,7 @@
                 <div class="modal-body">
                     <form method="post">
                         {% csrf_token %}
-                        {{ company_form.as_p }}
+                        {{ form.as_p }}
                         <button type="submit" name="create_company" class="btn bg-dark text-white w-100">
                             <i class="fas fa-check me-2"></i>Crea Azienda
                         </button>
@@ -51,9 +46,9 @@
             <thead class="table-dark">
                 <tr>
                     <th>Nome</th>
-                    <th>Indirizzo</th>
+                    <th class="d-none d-md-table-cell">Indirizzo</th>
                     <th>Telefono</th>
-                    <th>Email</th>
+                    <th class="d-none d-md-table-cell">Email</th>
                     <th>Azioni</th>
                 </tr>
             </thead>
@@ -61,14 +56,14 @@
                 {% for company in companies %}
                     <tr>
                         <td>{{ company.name }}</td>
-                        <td>{{ company.address }}</td>
+                        <td class="d-none d-md-table-cell">{{ company.address }}</td>
                         <td>{{ company.phone }}</td>
-                        <td>{{ company.email }}</td>
+                        <td class="d-none d-md-table-cell">{{ company.email }}</td>
                         <td>
                             <a href="{% url 'crm:company_detail' company.id %}" class="btn btn-outline-dark btn-sm">
                                 <i class="fas fa-info-circle"></i>
                             </a>
-                            <button type="submit" name="delete_object" class="btn btn-sm btn-outline-danger" onclick="return confirm('Sei sicuro di voler eliminare ?');">
+                            <button type="submit" name="delete_object" class="btn btn-sm btn-outline-danger" onclick="return confirm('Sei sicuro di voler eliminare questa azienda?');">
                                 <i class="fas fa-trash-alt"></i> 
                             </button>
                         </td>
