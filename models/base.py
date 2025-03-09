@@ -14,7 +14,11 @@ class CompanyCategory(models.Model):
 
 class Company(models.Model):
     name = models.CharField(_("nome"), max_length=100, db_index=True)
+    vat_number = models.CharField(_("partita IVA"), max_length=30, blank=True, db_index=True)
     address = models.CharField(_("indirizzo"), max_length=200)
+    city = models.CharField(_("città"), max_length=100, blank=True)
+    postal_code = models.CharField(_("CAP"), max_length=10, blank=True)
+    country = models.CharField(_("nazione"), max_length=2, blank=True)
     category = models.ForeignKey(CompanyCategory, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("categoria"))
     website = models.URLField(_("sito web"), blank=True)
     phone = models.CharField(_("telefono"), max_length=20, blank=True)

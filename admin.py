@@ -11,7 +11,7 @@ class PersonInline(admin.TabularInline):
     autocomplete_fields = ['company']
 
 class CompanyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'address', 'category', 'phone', 'email', 'is_own_company')
+    list_display = ('name', 'address', 'vat_number', 'category', 'phone', 'email', 'is_own_company')
     list_filter = ('category', 'is_own_company')
     search_fields = ('name', 'address', 'email')
     inlines = [PersonInline]

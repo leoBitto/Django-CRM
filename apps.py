@@ -23,7 +23,8 @@ def create_default_company(sender, **kwargs):
         "phone": "+39 123 456 7890",
         "email": "info@horeca.it",
         "notes": "Azienda principale del sistema",
-        "is_own_company": True
+        "is_own_company": True,
+        "vat_number": "06967180487",
     }
 
     try:

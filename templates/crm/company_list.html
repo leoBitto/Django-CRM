@@ -63,9 +63,13 @@
                             <a href="{% url 'crm:company_detail' company.id %}" class="btn btn-outline-dark btn-sm">
                                 <i class="fas fa-info-circle"></i>
                             </a>
-                            <button type="submit" name="delete_object" class="btn btn-sm btn-outline-danger" onclick="return confirm('Sei sicuro di voler eliminare questa azienda?');">
-                                <i class="fas fa-trash-alt"></i> 
-                            </button>
+                            <form method="post" class="d-inline" onsubmit="return confirm('Sei sicuro di voler eliminare?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="delete_object" value="{{ company.id }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 {% empty %}
